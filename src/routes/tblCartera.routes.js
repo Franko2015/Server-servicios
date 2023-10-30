@@ -1,21 +1,19 @@
 import { Router } from 'express';
-import { getAll, getOne, put, del, post } from '../controllers/tblCartera.controller.js'
+import { getOne, edit, del, create } from '../controllers/tblCartera.controller.js'
+import validateToken from '../middleware/validate-token.js';
 
 const router = Router();
 
-// Get All
-router.get('/api/cartera', getAll);
-
 // Get One
-router.get('/api/cartera/:id', getOne);
+router.get('/api/cartera/:id', validateToken, getOne);
 
 // Update
-router.put('/api/cartera/:id', put);
+router.put('/api/cartera/:id', validateToken, edit);
 
 // Delete
-router.delete('/api/cartera/:id', del);
+router.delete('/api/cartera/:id', validateToken, del);
 
 // Create
-router.post('/api/cartera', post);
+router.post('/api/cartera', validateToken, create);
 
 export const Cartera = router;
