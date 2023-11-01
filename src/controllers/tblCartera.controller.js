@@ -84,4 +84,3 @@ export const create = async (req, res) => {
     return res.status(500).json({ msg: 'Error al agregar la tarjeta' });
   }
 };
-

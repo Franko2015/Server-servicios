@@ -11,7 +11,7 @@ router.get('/api/usuarios', validateToken, getAll);
 router.get('/api/usuarios/:rut', validateToken, getOne);
 
 // Update
-router.put('/api/usuarios/:rut', edit);
+router.put('/api/usuarios/:rut', validateToken, edit);
 
 // Create
 router.post('/api/usuarios', create);
