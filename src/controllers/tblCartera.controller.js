@@ -29,8 +29,8 @@ export const edit = async (req, res) => {
   const { n_tarjeta, fecha_caducidad, ccv, nombre_tarjeta, rut_usuario } = req.body;
 
   try {
-    const [resultado] = await pool.query(`UPDATE ${tabla} SET n_tarjeta = ?, fecha_caducidad = ?, ccv = ?, nombre_tarjeta = ? WHERE ${identificador} = ${id}`,
-      [n_tarjeta, fecha_caducidad, ccv, nombre_tarjeta]);
+    const [resultado] = await pool.query(`UPDATE ${tabla} SET n_tarjeta = ?, fecha_caducidad = ?, ccv = ?, nombre_tarjeta = ?, rut_usuario = ? WHERE ${identificador} = ${id}`,
+      [n_tarjeta, fecha_caducidad, ccv, nombre_tarjeta, rut_usuario]);
 
     if (resultado.affectedRows > 0) {
       res.json({ msg: 'Tarjeta actualizada correctamente' });
@@ -52,7 +52,7 @@ export const del = async (req, res) => {
     const [resultado] = await pool.query(`DELETE FROM ${tabla} WHERE ${identificador} = ${id}`);
 
     if (resultado.affectedRows > 0) {
-      res.json({ msg: 'Eliminado correctamente' });
+      res.json({ msg: 'Método de pago eliminado correctamente' });
       await postLog(`Consulta a ${tabla}`, `Consulta DELETE a la ${identificador} = ${id}`);
     } else {
       res.status(404).json({ msg: 'No encontrado' });
@@ -75,7 +75,7 @@ export const create = async (req, res) => {
 
     if (resultado.affectedRows > 0) {
       await postLog(`Consulta a ${tabla}`, `Consulta CREATE usuario = ${rut_usuario}`);
-      return res.json({ msg: 'Agregado correctamente' });
+      return res.json({ msg: 'Método de pago agregado correctamente' });
     } else {
       throw new Error('Error al agregar el dato');
     }
