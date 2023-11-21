@@ -8,6 +8,7 @@ import { Usuario } from './routes/tblUsuario.routes.js'
 import { Tecnico } from './routes/tblTecnico.routes.js'
 import { Log } from './routes/tblLog.routes.js'
 import { Ticket } from './routes/tblTicket.routes.js'
+import { Chat } from './routes/tblChat.routes.js';
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use(Usuario);
 app.use(Tecnico);
 app.use(Log);
 app.use(Ticket);
+app.use(Chat);
 
 // settings
 app.set('port', process.env.PORT || 4000);

@@ -20,7 +20,7 @@ export const getOne = async (req, res) => {
   const { id } = req.params;
 
   try {
-      const [resultado] = await pool.query(`SELECT * FROM ${tabla} WHERE ${identificador} = ${id}`);
+      const [resultado] = await pool.query(`SELECT * FROM ${tabla} WHERE ${identificador} = ?`, [id]);
 
       if (resultado.length > 0) {
           res.json(resultado[0]);
@@ -40,8 +40,8 @@ export const put = async (req, res) => {
   const { habilidad, descripcion_habilidad, puntuacion_habilidad } = req.body;
 
   try {
-      const [resultado] = await pool.query(`UPDATE ${tabla} SET habilidad = ?, descripcion_habilidad = ?, puntuacion_habilidad = ? WHERE ${identificador} = ${id}`,
-      [habilidad, descripcion_habilidad, puntuacion_habilidad]);
+      const [resultado] = await pool.query(`UPDATE ${tabla} SET habilidad = ?, descripcion_habilidad = ?, puntuacion_habilidad = ? WHERE ${identificador} = ?`,
+      [habilidad, descripcion_habilidad, puntuacion_habilidad, id]);
 
       if (resultado.affectedRows > 0) {
           res.json({ message: 'Actualizado correctamente' });
