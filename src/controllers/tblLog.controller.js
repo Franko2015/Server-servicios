@@ -20,10 +20,10 @@ export async function postLog (error, tipo){
 
 export const getAllLog = async (req, res) => {
   try {
-    const [resultado] = await pool.query(`SELECT * FROM ${tabla}`);
+    const [resultado] = await pool.query(`SELECT * FROM ${tabla} ORDER BY id_log DESC`);
     res.json(resultado);
-    await putLog(`Consulta a ${tabla}`, "Consulta SELECT");
+    await postLog(`Consulta a ${tabla}`, "Consulta SELECT");
   } catch (error) {
-    await putLog(error, "Error en la BD");
+    await postLog(error, "Error en la BD");
   }
 };

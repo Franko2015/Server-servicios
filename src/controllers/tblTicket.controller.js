@@ -6,7 +6,7 @@ const identificador = "id_ticket";
 
 export const getAll = async (req, res) => {
   try {
-    const [resultado] = await pool.query(`SELECT * FROM ${tabla}`);
+    const [resultado] = await pool.query(`SELECT * FROM ${tabla} ORDER BY ${identificador} DESC`);
     res.status(201).json(resultado);
     await postLog(`Consulta a ${tabla}`, "Consulta SELECT");
   } catch (error) {
@@ -89,7 +89,7 @@ export const put = async (req, res) => {
 };
 
 export const post = async (req, res) => {
-  const tickets = req.body; // Ahora esperamos un array de tickets en lugar de un solo objeto
+  const tickets = req.body;
 
   if (!Array.isArray(tickets) || tickets.length === 0) {
     return res
@@ -98,12 +98,8 @@ export const post = async (req, res) => {
   }
 
   try {
-    const [maxIdResult] = await pool.query(
-      `SELECT MAX(id_ticket) as maxId FROM ${tabla}`
-    );
-    const ultimoIdTicket = maxIdResult[0].maxId || 0;
-
-    const insertPromises = tickets.map(async (ticket) => {
+    let values = []; // Array para almacenar los valores de los registros
+    for (const ticket of tickets) {
       const { rut_usuario, descripcion, valor_trabajo, pagado } = ticket;
 
       // Verificar si el rut_usuario existe en la tabla tblUsuario
@@ -123,31 +119,32 @@ export const post = async (req, res) => {
       }
 
       // Continuar con la inserción del ticket
-      const id_ticket = ultimoIdTicket + 1; // Generar un nuevo id_ticket
+      const id_ticket = await obtenerNuevoIdTicket(); // Obtener un nuevo id_ticket
 
-      const [resultado] = await pool.query(
-        `INSERT INTO ${tabla} (id_ticket, rut_usuario, descripcion, valor_trabajo, pagado) VALUES (?, ?, ?, ?, ?)`,
-        [id_ticket, rut_usuario, descripcion, valor_trabajo, pagado]
-      );
+      values.push([id_ticket, rut_usuario, descripcion, valor_trabajo, pagado]);
+    }
 
-      if (resultado.affectedRows === 0) {
-        // Manejar el caso en el que no se pudo insertar un ticket
-        res.status(400).json("No se pudo insertar un ticket:", ticket);
-      } else {
-        res
-          .status(200)
-          .json({ msg: `Se ha registrado su ticket n° ${id_ticket}` });
-        await postLog(`INSERT`, `${rut_usuario} crea ticket ${id_ticket}.`);
-      }
-    });
+    const query = `INSERT INTO ${tabla} (id_ticket, rut_usuario, descripcion, valor_trabajo, pagado) VALUES ?`;
+    const [resultado] = await pool.query(query, [values]);
 
-    // Esperar a que todas las inserciones se completen antes de responder al cliente
-    await Promise.all(insertPromises);
+    if (resultado.affectedRows > 0) {
+      res.status(200).json({ msg: 'Tickets agregados correctamente' });
+    } else {
+      res.status(500).json({ message: 'Error al agregar los tickets' });
+    }
   } catch (error) {
-    await postLog(error, "Error en la BD");
-    res.status(500).json({ msg: "Error al agregar los tickets" });
+    await reportes(error);
+    res.status(500).json({ message: 'Error al agregar los tickets' });
   }
 };
+
+// Función para obtener un nuevo id_ticket
+const obtenerNuevoIdTicket = async () => {
+  const [maxIdResult] = await pool.query(`SELECT MAX(id_ticket) as maxId FROM ${tabla}`);
+  const ultimoIdTicket = maxIdResult[0].maxId || 0;
+  return ultimoIdTicket + 1;
+};
+
 
 export const getTickets = async (req, res) => {
   const { rut_usuario } = req.params;
@@ -177,7 +174,7 @@ export const getTickets = async (req, res) => {
       res.status(201).json(resultado);
       await postLog(
         `Consulta a tblTicket, tblAsigna_ticket, tblUsuario y tblTecnico`,
-        `Consulta SELECT con JOIN a las tablas tblTicket, tblAsigna_ticket, tblUsuario y tblTecnico con rut_usuario = ${rut_usuario}`
+        `Consulta SELECT con JOIN a las tablas tblTicket, tblAsigna_ticket, tblUsuario y tblTecnico con rut_usuario = ${rut_usuario} ORDER BY t.id_detalle DESC;`
       );
     } else {
       res.status(404).json({ msg: "No encontrado" });
@@ -188,24 +185,25 @@ export const getTickets = async (req, res) => {
   }
 };
 
-export async function statusTicket(n_ticket) {
+export async function statusTicket(id_detalle) {
   try {
     const [resultado] = await pool.query(
-      `UPDATE ${tabla} SET pagado = ? WHERE ${identificador} = ?`,
-      ['Si', n_ticket]
+      `UPDATE tblTicket SET pagado = ? WHERE id_detalle = ?`,
+      ['Si', id_detalle]
     );
 
     if (resultado.affectedRows > 0) {
-      res.status(201).json({ msg: "Pago realizado correctamente" });
       await postLog(
-        `Consulta a ${tabla}`,
-        `Consulta UPDATE a la ${identificador} = ${n_ticket}`
+        `Consulta a tblTicket`,
+        `Consulta UPDATE a la id_detalle = ${id_detalle}`
       );
     } else {
-      res.status(404).json({ msg: "No se ha encontrado la tarjeta" });
+      console.error("No se ha encontrado la tarjeta");
     }
   } catch (error) {
+    console.error("Error en la BD:", error);
     await postLog(error, "Error en la BD");
-    res.status(500).json({ msg: "Error al realizar el pago" });
   }
-};
+}
+
+

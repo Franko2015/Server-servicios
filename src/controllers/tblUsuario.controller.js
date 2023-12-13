@@ -28,23 +28,32 @@ export const getOne = async (req, res) => {
     );
 
     if (resultado.length > 0) {
-      res.status(201).json(resultado[0]);
-      await postLog(
-        `Consulta a ${tabla}`,
-        `Consulta SELECT ONE a la ${tabla} = ${rut}`
-      );
-    } else if (res.status === 404) {
-      res.status(404).json({ msg: "No encontrado" });
-    } else if (res.status === 401) {
-      res.status(401).json({ msg: "No autorizado" });
+      const usuario = resultado[0];
+
+      if (usuario.estado_cuenta === 'SUSPENDIDA') {
+        await postLog(
+          `Consulta a ${tabla}`,
+          `Usuario ${rut} ha intentado ingresar`
+        );
+        res.status(401).json({ msg: 'Su cuenta ha sido suspendida' });
+      } else {
+        res.status(201).json(usuario);
+        await postLog(
+          `Consulta a ${tabla}`,
+          `Consulta SELECT ONE a la ${tabla} = ${rut}`
+        );
+      }
+    } else {
+      res.status(404).json({ msg: 'No encontrado' });
     }
   } catch (error) {
-    await postLog(error, "Error en la BD");
+    await postLog(error, 'Error en la BD');
     res.status(500).json({
-      msg: "El servidor no se encuentra disponible. Intente más tarde.",
+      msg: 'El servidor no se encuentra disponible. Intente más tarde.',
     });
   }
 };
+
 
 //Se edita el usuario a modo que el rut sea no editable
 export const edit = async (req, res) => {
@@ -86,6 +95,33 @@ export const edit = async (req, res) => {
       );
     } else {
       res.status(404).json({ msg: "No encontrado" });
+    }
+  } catch (error) {
+    await postLog(error, "Error en la BD");
+    res.status(500).json({
+      msg: "El servidor no se encuentra disponible. Intente más tarde.",
+    });
+  }
+};
+
+export const state = async (req, res) => {
+  const { rut } = req.params;
+  const { estado_cuenta } = req.body;
+
+  try {
+    const [resultado] = await pool.query(
+      `UPDATE ${tabla} SET estado_cuenta = ? WHERE ${identificador} = ?`,
+      [estado_cuenta, rut]
+    );
+
+    if (resultado.affectedRows > 0) {
+      res.json({ msg: "Estado de usuario actualizado correctamente" });
+      await postLog(
+        `Consulta a ${tabla}`,
+        `Suspensión de cuenta a ${rut}`
+      );
+    } else {
+      res.status(404).json({ msg: "Usuario no encontrado" });
     }
   } catch (error) {
     await postLog(error, "Error en la BD");

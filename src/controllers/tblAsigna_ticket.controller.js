@@ -26,11 +26,11 @@ export const getOne = async (req, res) => {
           res.json(resultado[0]);
           await postLog(`Consulta a ${tabla}`, `Consulta SELECT ONE a la ${identificador} = ${id}`);
       } else {
-          res.status(404).json({ message: 'No encontrado' });
+          res.status(404).json({ msg: 'No encontrado' });
       }
   } catch (error) {
     await postLog(error, "Error en la BD");
-      res.status(500).json({ message: 'Error al obtener los datos' });
+      res.status(500).json({ msg: 'Error al obtener los datos' });
   }
 };
 
@@ -47,11 +47,11 @@ export const put = async (req, res) => {
           res.json({ message: 'Actualizado correctamente' });
           await postLog(`Consulta a ${tabla}`, `Consulta UPDATE a la ${identificador} = ${id}`);
       } else {
-          res.status(404).json({ message: 'No encontrado' });
+          res.status(404).json({ msg: 'No encontrado' });
       }
   } catch (error) {
     await postLog(error, "Error en la BD");
-      res.status(500).json({ message: 'Error al actualizar los datos' });
+      res.status(500).json({ msg: 'Error al actualizar los datos' });
   }
 };
 
@@ -63,14 +63,14 @@ export const del = async (req, res) => {
       const [resultado] = await pool.query(`DELETE FROM ${tabla} WHERE ${identificador} = ${id}`);
 
       if (resultado.affectedRows > 0) {
-          res.json({ message: 'Eliminado correctamente' });
+          res.json({ msg: 'Eliminado correctamente' });
           await postLog(`Consulta a ${tabla}`, `Consulta DELETE a la ${identificador} = ${id}`);
       } else {
-          res.status(404).json({ message: 'No encontrado' });
+          res.status(404).json({ msg: 'No encontrado' });
       }
   } catch (error) {
     await postLog(error, "Error en la BD");
-      res.status(500).json({ message: 'Error al eliminar el dato' });
+      res.status(500).json({ msg: 'Error al eliminar el dato' });
   }
 };
 
@@ -83,13 +83,13 @@ export const post = async (req, res) => {
 
       if (resultado.affectedRows > 0) {
           const nuevoId = resultado.insertId;
-          res.json({ id: nuevoId, message: 'Agregado correctamente' });
+          res.json({ id: nuevoId, msg: 'Agregado correctamente' });
           await postLog(`Consulta a ${tabla}`, `Consulta CREATE usuario = ${usuario}`);
       } else {
-          res.status(500).json({ message: 'Error al agregar el dato' });
+          res.status(500).json({ msg: 'Error al agregar el dato' });
       }
   } catch (error) {
     await postLog(error, "Error en la BD");
-      res.status(500).json({ message: 'Error al agregar el dato' });
+      res.status(500).json({ msg: 'Error al agregar el dato' });
   }
 };

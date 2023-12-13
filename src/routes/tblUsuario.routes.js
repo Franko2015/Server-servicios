@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAll, getOne, edit, create, login } from '../controllers/tblUsuario.controller.js'
+import { getAll, getOne, edit, create, login, state } from '../controllers/tblUsuario.controller.js'
 import validateToken from '../middleware/validate-token.js';
 
 const router = Router();
@@ -12,6 +12,9 @@ router.get('/api/usuarios/:rut', validateToken, getOne);
 
 // Update
 router.put('/api/usuarios/:rut', validateToken, edit);
+
+// Change state
+router.put('/api/usuarios/state/:rut', validateToken, state);
 
 // Create
 router.post('/api/usuarios', create);
