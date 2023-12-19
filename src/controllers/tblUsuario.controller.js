@@ -30,12 +30,12 @@ export const getOne = async (req, res) => {
     if (resultado.length > 0) {
       const usuario = resultado[0];
 
-      if (usuario.estado_cuenta === 'SUSPENDIDA') {
+      if (usuario.estado_cuenta === "SUSPENDIDA") {
         await postLog(
           `Consulta a ${tabla}`,
           `Usuario ${rut} ha intentado ingresar`
         );
-        res.status(401).json({ msg: 'Su cuenta ha sido suspendida' });
+        res.status(401).json({ msg: "Su cuenta ha sido suspendida" });
       } else {
         res.status(201).json(usuario);
         await postLog(
@@ -44,16 +44,15 @@ export const getOne = async (req, res) => {
         );
       }
     } else {
-      res.status(404).json({ msg: 'No encontrado' });
+      res.status(404).json({ msg: "No encontrado" });
     }
   } catch (error) {
-    await postLog(error, 'Error en la BD');
+    await postLog(error, "Error en la BD");
     res.status(500).json({
-      msg: 'El servidor no se encuentra disponible. Intente más tarde.',
+      msg: "El servidor no se encuentra disponible. Intente más tarde.",
     });
   }
 };
-
 
 //Se edita el usuario a modo que el rut sea no editable
 export const edit = async (req, res) => {
@@ -116,10 +115,7 @@ export const state = async (req, res) => {
 
     if (resultado.affectedRows > 0) {
       res.json({ msg: "Estado de usuario actualizado correctamente" });
-      await postLog(
-        `Consulta a ${tabla}`,
-        `Suspensión de cuenta a ${rut}`
-      );
+      await postLog(`Consulta a ${tabla}`, `Suspensión de cuenta a ${rut}`);
     } else {
       res.status(404).json({ msg: "Usuario no encontrado" });
     }
