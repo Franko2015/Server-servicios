@@ -31,7 +31,7 @@ export const getOne = async (req, res) => {
         `Consulta SELECT ONE a la ${identificador} = ${id}`
       );
     } else {
-      res.status(404).json({ msg: "No encontrado" });
+      res.status(404).json({ msg: "No hay tickets realizados" });
     }
   } catch (error) {
     await postLog(error, "Error en la BD");
@@ -205,5 +205,3 @@ export async function statusTicket(id_detalle) {
     await postLog(error, "Error en la BD");
   }
 }
-
-

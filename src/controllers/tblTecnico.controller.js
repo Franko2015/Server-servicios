@@ -46,10 +46,34 @@ export const getOne = async (req, res) => {
   }
 };
 
-export const put = async (req, res) => {
-  const { id } = req.params;
-  const { habilidad, descripcion_habilidad, puntuacion_habilidad } = req.body;
+export const addHabilitie = async (req, res) => {
+  const { rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad } = req.body;
 
+try {
+  const [resultado] = await pool.query(
+    `INSERT INTO ${tabla} (rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad) VALUES (?, ?, ?, ?)`,
+    [rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad]
+  );
+
+  if (resultado.insertId) {
+    res.status(200).json({ msg: "Insertado correctamente" });
+    await postLog(
+      `Consulta a ${tabla}`,
+      `Consulta INSERT con ID insertado = ${resultado.insertId}`
+    );
+  } else {
+    res.status(500).json({ msg: "Error al insertar los datos" });
+  }
+} catch (error) {
+  await postLog(error, "Error en la BD");
+  res.status(500).json({ msg: "Error al insertar los datos" });
+}
+
+};
+
+export const put = async (req, res) => {
+  const id = req.params.id
+  const { habilidad, descripcion_habilidad, puntuacion_habilidad } = req.body;
   try {
     const [resultado] = await pool.query(
       `UPDATE ${tabla} SET habilidad = ?, descripcion_habilidad = ?, puntuacion_habilidad = ? WHERE ${identificador} = ?`,
@@ -69,20 +93,14 @@ export const put = async (req, res) => {
     await postLog(error, "Error en la BD");
     res.status(500).json({ msg: "Error al actualizar los datos" });
   }
-};
+}
 
 export const post = async (req, res) => {
-  const {
-    rut_usuario,
-    habilidad,
-    descripcion_habilidad,
-    puntuacion_habilidad,
-  } = req.body;
-
+  const { rut_usuario } = req.body;
   try {
     const [resultado] = await pool.query(
-      `INSERT INTO ${tabla} (rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad) VALUES (?, ?, ?, ?)`,
-      [rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad]
+      `UPDATE tblUsuario SET tipo_cuenta = 'TECNICO' WHERE rut_usuario = '${rut_usuario}'`,
+      [rut_usuario]
     );
 
     if (resultado.affectedRows > 0) {

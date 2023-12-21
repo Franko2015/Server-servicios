@@ -12,8 +12,6 @@ import { Ticket } from "./routes/tblTicket.routes.js";
 import { Chat } from "./routes/tblChat.routes.js";
 import { Email } from "./routes/email.routes.js";
 
-
-
 app.use(cors());
 app.use(express.json());
 

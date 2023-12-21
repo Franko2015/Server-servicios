@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAll, getOne, put, post, del } from '../controllers/tblTecnico.controller.js'
+import { getAll, getOne, put, post, del, addHabilitie } from '../controllers/tblTecnico.controller.js'
 import validateToken from '../middleware/validate-token.js';
 
 const router = Router();
@@ -15,6 +15,9 @@ router.put('/api/tecnico/:id', validateToken, put);
 
 // Delete
 router.delete('/api/tecnico/:id', validateToken, del);
+
+// Create
+router.post('/api/tecnico/add', validateToken, addHabilitie);
 
 // Create
 router.post('/api/tecnico', validateToken, post);
