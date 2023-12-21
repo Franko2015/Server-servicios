@@ -25,7 +25,7 @@ app.use(Chat);
 app.use(Email);
 
 // settings
-app.set("port", process.env.PORT || 4000);
+app.set("port", process.env.PORT_API || 4000);
 app.set("json spaces", 2);
 
 //middlewares

@@ -23,7 +23,7 @@ router.put("/api/cartera/:id", validateToken, edit);
 router.delete("/api/cartera/:id", validateToken, del);
 
 // Create
-router.post("/api/cartera/", validateToken, create);
+router.post("/api/cartera", validateToken, create);
 
 // Payment
 router.post("/api/cartera/payment", validateToken, addCash);

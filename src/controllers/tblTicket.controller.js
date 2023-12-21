@@ -133,7 +133,6 @@ export const post = async (req, res) => {
       res.status(500).json({ message: 'Error al agregar los tickets' });
     }
   } catch (error) {
-    await reportes(error);
     res.status(500).json({ message: 'Error al agregar los tickets' });
   }
 };

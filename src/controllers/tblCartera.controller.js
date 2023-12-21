@@ -213,7 +213,7 @@ export const addCash = async (req, res) => {
 export const payTicket = async (req, res) => {
   const { rut_usuario, monto, ticket } = req.body;
   try {
-    const pagoRealizado = await pay(req, res);
+    const pagoRealizado = await addCash(this.req, this.res);
 
     if (pagoRealizado) {
       await statusTicket(ticket);

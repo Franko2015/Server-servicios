@@ -5,7 +5,7 @@ import validateToken from '../middleware/validate-token.js';
 const router = Router();
 
 // Get All
-router.get('/api/chat/', validateToken, getAllChats);
+router.get('/api/chat', validateToken, getAllChats);
 
 //Get One chat
 router.get('/api/chat/:rut_cliente', validateToken, getChat);

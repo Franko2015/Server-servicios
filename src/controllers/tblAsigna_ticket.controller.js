@@ -7,13 +7,26 @@ const identificador = "id";
 
 export const getAll = async (req, res) => {
   try {
-    const [resultado] = await pool.query(`SELECT * FROM ${tabla}`);
+    const query = `
+      SELECT 
+        t.*, 
+        a.rut_tecnico, 
+        u.nombre as nombre_tecnico,
+        u.apellido_paterno as apellido_paterno_tecnico,
+        u.apellido_materno as apellido_materno_tecnico
+      FROM tblTicket t
+      LEFT JOIN tblAsigna_ticket a ON t.id_detalle = a.id_detalle
+      LEFT JOIN tblUsuario u ON a.rut_tecnico = u.rut_usuario
+    `;
+    const [resultado] = await pool.query(query);
     res.json(resultado);
     await postLog(`Consulta a ${tabla}`, "Consulta SELECT");
   } catch (error) {
     await postLog(error, "Error en la BD");
+    res.status(500).json({ msg: 'Error al obtener los datos' });
   }
 };
+
 
 
 export const getOne = async (req, res) => {
@@ -76,20 +89,31 @@ export const del = async (req, res) => {
 
 
 export const post = async (req, res) => {
-  const { id_ticket, rut_tecnico } = req.body;
+  const { id_detalle, rut_tecnico } = req.body;
+  console.log({ id_detalle, rut_tecnico });
 
   try {
-      const [resultado] = await pool.query(`INSERT INTO ${tabla} (id_ticket, rut_tecnico) VALUES (?, ?)`, [id_ticket, rut_tecnico]);
+    // Verificar si el ticket ya está asignado a un técnico
+    const [verificacion] = await pool.query(`SELECT * FROM ${tabla} WHERE id_detalle = ?`, [id_detalle]);
 
-      if (resultado.affectedRows > 0) {
-          const nuevoId = resultado.insertId;
-          res.json({ id: nuevoId, msg: 'Agregado correctamente' });
-          await postLog(`Consulta a ${tabla}`, `Consulta CREATE usuario = ${usuario}`);
-      } else {
-          res.status(500).json({ msg: 'Error al agregar el dato' });
-      }
+    if (verificacion.length > 0) {
+      res.status(400).json({ msg: 'El ticket ya está asignado a un técnico' });
+      return;
+    }
+
+    // Si el ticket no está asignado, proceder con la inserción
+    const [resultado] = await pool.query(`INSERT INTO ${tabla} (id_detalle, rut_tecnico) VALUES (?, ?)`, [id_detalle, rut_tecnico]);
+
+    if (resultado.affectedRows > 0) {
+      const nuevoId = resultado.insertId;
+      res.json({ id: nuevoId, msg: 'Agregado correctamente' });
+      await postLog(`Consulta a ${tabla}`, `Consulta CREATE usuario = ${usuario}`);
+    } else {
+      res.status(500).json({ msg: 'Error al agregar el dato' });
+    }
   } catch (error) {
     await postLog(error, "Error en la BD");
-      res.status(500).json({ msg: 'Error al agregar el dato' });
+    res.status(500).json({ msg: 'Error al agregar el dato' });
   }
 };
+
