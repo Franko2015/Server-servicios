@@ -27,8 +27,6 @@ export const getAll = async (req, res) => {
   }
 };
 
-
-
 export const getOne = async (req, res) => {
   const { id } = req.params;
 
@@ -46,7 +44,6 @@ export const getOne = async (req, res) => {
       res.status(500).json({ msg: 'Error al obtener los datos' });
   }
 };
-
 
 export const put = async (req, res) => {
   const { id } = req.params;
@@ -68,7 +65,6 @@ export const put = async (req, res) => {
   }
 };
 
-
 export const del = async (req, res) => {
   const { id } = req.params;
 
@@ -86,7 +82,6 @@ export const del = async (req, res) => {
       res.status(500).json({ msg: 'Error al eliminar el dato' });
   }
 };
-
 
 export const post = async (req, res) => {
   const { id_detalle, rut_tecnico } = req.body;

@@ -55,11 +55,11 @@ try {
     [rut_usuario, habilidad, descripcion_habilidad, puntuacion_habilidad]
   );
 
-  if (resultado.insertId) {
+  if (resultado) {
     res.status(200).json({ msg: "Insertado correctamente" });
     await postLog(
       `Consulta a ${tabla}`,
-      `Consulta INSERT con ID insertado = ${resultado.insertId}`
+      `Consulta INSERT con ID insertado = ${rut_usuario}`,
     );
   } else {
     res.status(500).json({ msg: "Error al insertar los datos" });

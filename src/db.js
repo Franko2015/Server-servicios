@@ -2,7 +2,7 @@ import { createPool } from "mysql2/promise";
 import { config } from "dotenv";
 config();
 
-const dev = {
+const desarrollo = {
   host: process.env.DEV_HOST,
   user: process.env.DEV_USER,
   password: process.env.DEV_PASS,
@@ -10,7 +10,7 @@ const dev = {
   database: process.env.DEV_BD,
 };
 
-const prod = {
+const produccion = {
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASS,
@@ -19,9 +19,20 @@ const prod = {
 };
 
 export const pool = createPool({
-  host: prod.host,
-  user: prod.user,
-  password: prod.password,
-  port: prod.port,
-  database: prod.database,
+  host: desarrollo.host,
+  user: desarrollo.user,
+  password: desarrollo.password,
+  port: desarrollo.port,
+  database: desarrollo.database,
 });
+
+/*
+export const pool = createPool({
+  host: "db-solutio.cvuagilm4qak.us-east-1.rds.amazonaws.com",
+  user: "admin",
+  password: "leica666",
+  port: "3306",
+  database: "Solutio",
+});
+*/
+
