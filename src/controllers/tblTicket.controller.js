@@ -187,7 +187,7 @@ export const getTickets = async (req, res) => {
 export async function statusTicket(id_detalle) {
   try {
     const [resultado] = await pool.query(
-      `UPDATE tblTicket SET pagado = ? WHERE id_detalle = ?`,
+      `UPDATE tblTicket SET pagado = ? WHERE id_ticket = ?`,
       ['Si', id_detalle]
     );
 

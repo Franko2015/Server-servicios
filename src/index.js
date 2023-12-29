@@ -11,7 +11,6 @@ import { Log } from "./routes/tblLog.routes.js";
 import { Ticket } from "./routes/tblTicket.routes.js";
 import { Chat } from "./routes/tblChat.routes.js";
 import { Email } from "./routes/email.routes.js";
-import { pool } from "./db.js";
 
 app.use(cors());
 app.use(express.json());
@@ -27,7 +26,7 @@ app.use(Email);
 
 // settings
 app.set("port", process.env.PORT_API || 4000);
-app.set("server", process.env.DEV_HOST);
+app.set("server", process.env.HOST);
 app.set("json spaces", 2);
 
 //middlewares

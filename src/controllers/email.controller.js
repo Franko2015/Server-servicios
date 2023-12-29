@@ -51,7 +51,6 @@ export const validate = async (req, res) => {
     
     <p style="font-size: 16px; margin-bottom: 20px;">Atentamente,<br>El Equipo de Solutio</p>
 </div>
-
         `,
   };
   try {

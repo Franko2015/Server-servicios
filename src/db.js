@@ -19,11 +19,11 @@ const produccion = {
 };
 
 export const pool = createPool({
-  host: desarrollo.host,
-  user: desarrollo.user,
-  password: desarrollo.password,
-  port: desarrollo.port,
-  database: desarrollo.database,
+  host: process.env.DEV_HOST,
+  user: process.env.DEV_USER,
+  password: process.env.DEV_PASS,
+  port: process.env.DEV_PORT,
+  database: process.env.DEV_BD,
 });
 
 /*

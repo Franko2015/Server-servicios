@@ -14,11 +14,8 @@ function validateToken(req, res, next) {
         req.decoded = decoded;
         next();
       }
-      next();
     });
-    next();
   }
-  next();
 }
 
 export default validateToken;

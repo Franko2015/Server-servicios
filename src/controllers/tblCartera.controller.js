@@ -201,15 +201,11 @@ export const payTicket = async (req, res) => {
 
     if (pagoRealizado) {
       await statusTicket(id_ticket);
-      console.log(
-        `Pago del ticket ${id_ticket} registrado para el usuario con rut ${rut_usuario}. Monto: ${monto}`
-      );
       res.status(200).json({ msg: "Pago registrado correctamente" });
     } else {
       throw new Error("Usuario no encontrado");
     }
   } catch (error) {
-    console.error("Error al procesar el pago del ticket:", error);
     res.status(500).json({ msg: "Error al procesar el pago del ticket" });
   }
 };
@@ -349,22 +345,38 @@ export const addCash = async (rut_usuario, amount) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const [resultado] = await connection.query(
-      `UPDATE ${tabla} SET monto = monto + ? WHERE rut_usuario = ?`,
-      [amount, rut_usuario]
+    // Verificar si el usuario existe
+    const [userExists] = await connection.query(
+      "SELECT COUNT(*) as count FROM tblCartera_cliente WHERE rut_usuario = ?",
+      [rut_usuario]
     );
 
-    if (resultado.affectedRows > 0) {
-      await postLog(
-        `Consulta a ${tabla}`,
-        `Consulta UPDATE a la ${tabla} = ${rut_usuario}`
+    if (userExists[0].count === 0) {
+      // Si el usuario no existe, realizar la inserción
+      await connection.query(
+        "INSERT INTO tblCartera_cliente (rut_usuario, monto) VALUES (?, ?)",
+        [rut_usuario, amount]
       );
-      await connection.commit();
-      return true;
     } else {
-      await connection.rollback();
-      return false;
+      // Si el usuario existe, realizar la actualización
+      const [resultado] = await connection.query(
+        "UPDATE tblCartera_cliente SET monto = monto + ? WHERE rut_usuario = ?",
+        [amount, rut_usuario]
+      );
+
+      if (resultado.affectedRows > 0) {
+        await postLog(
+          `Consulta a tblCartera_cliente`,
+          `Consulta UPDATE a la tblCartera_cliente = ${rut_usuario}`
+        );
+      } else {
+        await connection.rollback();
+        return false;
+      }
     }
+
+    await connection.commit();
+    return true;
   } catch (error) {
     console.error(error);
     if (connection) {
