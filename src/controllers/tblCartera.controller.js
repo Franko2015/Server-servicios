@@ -10,7 +10,7 @@ const PAYPAL_API = process.env.S_PAYPAL_API;
 const auth = { user: CLIENT, pass: SECRET };
 import request from "request";
 
-const tabla = "tblcartera_cliente";
+const tabla = "tblCartera_cliente";
 const identificador = "rut_usuario";
 
 export const getOne = async (req, res) => {
